@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+  echo "usage: mirror-svn-to-git <svn repo> <local cache> <git repo>" >&2
+  exit 1
+fi
+
+SVN_REPO=$1
+LOCAL_CACHE=$2
+GIT_REPO=$3
+READLINK=$(which greadlink || which readlink)
+LIBEXEC="$($READLINK -f `dirname $0`)/../libexec"
+
+shift; shift; shift
+
+authors_file=$(mktemp -t mirror-svn-to-git-authors)
+svn log -q --xml "$SVN_REPO" | $LIBEXEC/authors-from-log > $authors_file
+
+mkdir -p "$SVN_REPO"
+cd "$SVN_REPO"
+
+if [ -d "$LOCAL_CACHE/.git" ]; then
+  git config --local svn.authorsfile $authors_file
+  svn2git -v --rebase "$@"
+else 
+  svn2git -v --authors $authors_file "$@" "$SVN_REPO"
+  git remote add origin "$GIT_REPO"
+fi
+
+git push --all origin
+git push --tags origin
+
+rm -f $authors_file

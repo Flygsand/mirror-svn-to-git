@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+import sys
+import xml.etree.ElementTree as et
+
+def parse_authors(source):
+  authors = dict()
+
+  context = et.iterparse(source, events=("start", "end"))
+  context = iter(context)
+  event, root = context.next()
+
+  for event, elem in context:
+    if event == "end" and elem.tag == "author":
+      (user, domain) = elem.text.split('@')
+      authors[elem.text] = (user, elem.text)
+      root.clear()
+
+  authors['(no author)'] = ('no_author', 'no_author@localhost')
+
+  return authors
+
+def main():
+  authors = parse_authors(sys.stdin)
+
+  for key, (user, email) in authors.iteritems():
+    print "%s = %s <%s>" % (key, user, email)
+
+if __name__ == '__main__':
+  main()
+
