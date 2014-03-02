@@ -16,8 +16,8 @@ shift; shift; shift
 authors_file=$(mktemp -t mirror-svn-to-git-authors)
 svn log -q --xml "$SVN_REPO" | $LIBEXEC/authors-from-log > $authors_file
 
-mkdir -p "$SVN_REPO"
-cd "$SVN_REPO"
+mkdir -p "$LOCAL_CACHE"
+cd "$LOCAL_CACHE"
 
 if [ -d "$LOCAL_CACHE/.git" ]; then
   git config --local svn.authorsfile $authors_file
