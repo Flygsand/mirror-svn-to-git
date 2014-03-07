@@ -21,9 +21,9 @@ cd "$LOCAL_CACHE"
 
 if [ -d "$LOCAL_CACHE/.git" ]; then
   git config --local svn.authorsfile $authors_file
-  svn2git -v --rebase "$@"
+  svn2git -m -v --rebase "$@"
 else 
-  svn2git -v --authors $authors_file "$@" "$SVN_REPO"
+  svn2git -m -v --authors $authors_file "$@" "$SVN_REPO"
   git remote add origin "$GIT_REPO"
 fi
 
