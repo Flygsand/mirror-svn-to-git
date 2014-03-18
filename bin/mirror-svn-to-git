@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 3 ]; then
   echo "usage: mirror-svn-to-git <svn repo> <local cache> <git repo>" >&2
   exit 1
 fi
