@@ -12,7 +12,7 @@ def parse_authors(source):
 
   for event, elem in context:
     if event == "end" and elem.tag == "author":
-      (user, domain) = elem.text.split('@')
+      (user, domain) = elem.text.partition('@')[::2]
       authors[elem.text] = (user, elem.text)
       root.clear()
 
