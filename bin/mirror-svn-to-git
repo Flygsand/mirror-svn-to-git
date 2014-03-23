@@ -13,16 +13,18 @@ LIBEXEC="$($READLINK -f `dirname $0`)/../libexec"
 
 shift; shift; shift
 
-authors_file=$(mktemp -t mirror-svn-to-git-authors)
-svn log -q --xml "$SVN_REPO" | $LIBEXEC/authors-from-log > $authors_file
+authors_file=$(mktemp -t mirror-svn-to-git-authors.XXXXXXXX)
 
 mkdir -p "$LOCAL_CACHE"
 cd "$LOCAL_CACHE"
 
 if [ -d "$LOCAL_CACHE/.git" ]; then
+  rev=$(git svn find-rev $(git rev-parse HEAD))
+  svn log -q --xml -r $rev "$SVN_REPO" | $LIBEXEC/authors-from-log > $authors_file
   git config --local svn.authorsfile $authors_file
   svn2git -m -v --rebase "$@"
-else 
+else
+  svn log -q --xml "$SVN_REPO" | $LIBEXEC/authors-from-log > $authors_file
   svn2git -m -v --authors $authors_file "$@" "$SVN_REPO"
   git remote add origin "$GIT_REPO"
 fi
